@@ -1,0 +1,17 @@
+[Unit]
+Description=ClickHouse http proxy and load balancer
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=chproxy
+Group=chproxy
+EnvironmentFile=/etc/sysconfig/chproxy
+ExecStart=/usr/bin/chproxy $CHPROXY_ARGS
+PIDFile=/var/run/chproxy/chproxy.pid
+LimitNOFILE=65536
+RuntimeDirectory=chproxy
+RuntimeDirectoryMode=0755
+
+[Install]
+WantedBy=multi-user.target

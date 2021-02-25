@@ -1,7 +1,7 @@
 pkgs = $(shell go list ./...)
 gofiles := $(shell find . -name "*.go" -type f -not -path "./vendor/*")
 
-BUILD_TAG = $(shell git tag --points-at HEAD)
+BUILD_TAG = $(shell git describe --tags)
 
 BUILD_CONSTS = \
 	-X main.buildTime=`date -u '+%Y-%m-%d_%H:%M:%S'` \

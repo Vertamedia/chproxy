@@ -69,6 +69,35 @@ go get -u github.com/Vertamedia/chproxy
 
 If you don't have Go installed on your system - follow [this guide](https://golang.org/doc/install).
 
+### Build RPM package (for systemd-based distro)
+
+Install requirements (as root or with sudo)
+
+```
+    yum install -y ruby-devel
+    gem install fpm
+```
+
+Build
+
+```
+    ./contrib/fpm/create_package_rpm.sh
+```
+
+### Build DEB package (for systemd-based distro)
+
+Install requirements (as root or with sudo)
+
+```
+    apt-get install -y ruby-dev
+    gem install fpm
+```
+
+Build
+
+```
+    ./contrib/fpm/create_package_deb.sh
+```
 
 ## Why it was created
 
