@@ -19,15 +19,11 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-type scopeID uint64
-
-func (sid scopeID) String() string {
-	return fmt.Sprintf("%08X", uint64(sid))
-}
+type scopeID string
 
 func newScopeID() scopeID {
 	sid := atomic.AddUint64(&nextScopeID, 1)
-	return scopeID(sid)
+	return scopeID(fmt.Sprintf("%08X", uint64(sid)))
 }
 
 var nextScopeID = uint64(time.Now().UnixNano())
@@ -56,9 +52,15 @@ func newScope(req *http.Request, u *user, c *cluster, cu *clusterUser) *scope {
 	if addr, ok := req.Context().Value(http.LocalAddrContextKey).(net.Addr); ok {
 		localAddr = addr.String()
 	}
+	var id scopeID
+	if val, ok := req.URL.Query()["query_id"]; ok {
+		id = scopeID(val[0])
+	} else {
+		id = newScopeID()
+	}
 	s := &scope{
 		startTime:   time.Now(),
-		id:          newScopeID(),
+		id:          id,
 		host:        h,
 		cluster:     c,
 		user:        u,
@@ -348,7 +350,7 @@ func (s *scope) decorateRequest(req *http.Request) (*http.Request, url.Values) {
 	}
 
 	// Set query_id as scope_id to have possibility to kill query if needed.
-	params.Set("query_id", s.id.String())
+	params.Set("query_id", string(s.id))
 
 	req.URL.RawQuery = params.Encode()
 
@@ -688,7 +690,7 @@ func (h *host) penalize() {
 	}).Inc()
 	atomic.AddUint32(&h.penalty, penaltySize)
 	time.AfterFunc(penaltyDuration, func() {
-		atomic.AddUint32(&h.penalty, ^uint32(penaltySize-1))
+		atomic.AddUint32(&h.penalty, ^uint32(penaltySize - 1))
 	})
 }
 
