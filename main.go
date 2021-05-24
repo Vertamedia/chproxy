@@ -115,7 +115,7 @@ func newAutocertManager(cfg config.Autocert) *autocert.Manager {
 }
 
 func newListener(listenAddr string) net.Listener {
-	ln, err := net.Listen("tcp4", listenAddr)
+	ln, err := net.Listen("tcp", listenAddr)
 	if err != nil {
 		log.Fatalf("cannot listen for %q: %s", listenAddr, err)
 	}
