@@ -167,7 +167,7 @@ func TestReverseProxy_ServeHTTP1(t *testing.T) {
 			expStatusCode: http.StatusTooManyRequests,
 			f: func(p *reverseProxy) *http.Response {
 				p.clusters["cluster"].users["web"].maxConcurrentQueries = 1
-				go makeHeavyRequest(p, time.Millisecond*20)
+				go makeHeavyRequest(p, time.Millisecond*200)
 				time.Sleep(time.Millisecond * 10)
 				return makeRequest(p)
 			},
@@ -211,9 +211,26 @@ func TestReverseProxy_ServeHTTP1(t *testing.T) {
 			expStatusCode: http.StatusTooManyRequests,
 			f: func(p *reverseProxy) *http.Response {
 				p.users["default"].maxConcurrentQueries = 1
-				go makeHeavyRequest(p, time.Millisecond*20)
+				go makeHeavyRequest(p, time.Millisecond*200)
 				time.Sleep(time.Millisecond * 10)
 				return makeRequest(p)
+			},
+		},
+		{
+			cfg:           goodCfg,
+			name:          "identical concurrent queries for user",
+			expResponse:   "1\n\n",
+			expStatusCode: http.StatusOK,
+			f: func(p *reverseProxy) *http.Response {
+				p.users["default"].detectIdenticalConcurrentQueries = true
+				p.users["default"].queueCh = make(chan struct{}, 1)
+				go makeHeavyRequest(p, time.Millisecond*200)
+				time.Sleep(time.Millisecond * 10)
+				go makeHeavyRequest(p, time.Millisecond*200)
+				time.Sleep(time.Millisecond * 10)
+				go makeHeavyRequest(p, time.Millisecond*200)
+				time.Sleep(time.Millisecond * 10)
+				return makeHeavyRequest(p, time.Millisecond*200)
 			},
 		},
 		{
@@ -250,11 +267,11 @@ func TestReverseProxy_ServeHTTP1(t *testing.T) {
 			f: func(p *reverseProxy) *http.Response {
 				p.users["default"].maxConcurrentQueries = 1
 				p.users["default"].queueCh = make(chan struct{}, 1)
-				go makeHeavyRequest(p, time.Millisecond*20)
+				go makeHeavyRequest(p, time.Millisecond*200)
 				time.Sleep(time.Millisecond * 5)
-				go makeHeavyRequest(p, time.Millisecond*20)
+				go makeHeavyRequest(p, time.Millisecond*200)
 				time.Sleep(time.Millisecond * 5)
-				return makeHeavyRequest(p, time.Millisecond*20)
+				return makeHeavyRequest(p, time.Millisecond*200)
 			},
 		},
 		{

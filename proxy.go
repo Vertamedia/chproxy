@@ -66,6 +66,7 @@ func (rp *reverseProxy) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 		q := getQuerySnippet(req)
 		err = fmt.Errorf("%s: %s; query: %q", s, err, q)
 		respondWith(rw, err, http.StatusTooManyRequests)
+		s.user.identicalQueryCounter.Dec(s)
 		return
 	}
 	defer s.dec()

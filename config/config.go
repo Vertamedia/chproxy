@@ -480,6 +480,12 @@ type User struct {
 	// if omitted or zero - no limits would be applied
 	MaxExecutionTime Duration `yaml:"max_execution_time,omitempty"`
 
+	// Detect all identical concurrently running queries for user
+	// put them to virtual queue and look at that queue as one query
+	// make sense when cache is enable
+	// if omitted or false - joining will not happens
+	DetectIdenticalConcurrentQueries bool `yaml:"detect_identical_concurrent_queries,omitempty"`
+
 	// Maximum number of requests per minute for user
 	// if omitted or zero - no limits would be applied
 	ReqPerMin uint32 `yaml:"requests_per_minute,omitempty"`

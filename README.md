@@ -529,6 +529,13 @@ users:
     # By default requests wait for up to 10 seconds in the queue.
     max_queue_time: 35s
 
+    # Whether to detect identical concurrent queries and run one query at time. 
+    # All identical queries will decrease queue by only 1 in case if `max_queue_size` defined
+    # Make sense when cache enabled
+    #
+    # By default its false
+    detect_identical_concurrent_queries: false
+
   - name: "default"
     to_cluster: "second cluster"
     to_user: "default"
