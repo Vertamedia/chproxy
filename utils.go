@@ -56,7 +56,7 @@ func getSessionId(req *http.Request) string {
 func getSessionTimeout(req *http.Request) int {
 	params := req.URL.Query()
 	sessionTimeout, err := strconv.Atoi(params.Get("session_timeout"))
-	if err != nil && sessionTimeout > 0 {
+	if err == nil && sessionTimeout > 0 {
 		return sessionTimeout
 	}
 	return 60
