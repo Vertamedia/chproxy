@@ -43,6 +43,10 @@ func newReverseProxy() *reverseProxy {
 			// Suppress error logging in ReverseProxy, since all the errors
 			// are handled and logged in the code below.
 			ErrorLog: log.NilLogger,
+			ErrorHandler: func(rw http.ResponseWriter, req *http.Request, err error) {
+				log.Errorf("http: proxy error: %v", err)
+				rw.WriteHeader(http.StatusBadGateway)
+			},
 		},
 		reloadSignal: make(chan struct{}),
 		reloadWG:     sync.WaitGroup{},
